@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NAERAVON - RENAS BİLEK</title>
+    <!-- FontAwesome İkonları -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fontlar -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: url('https://images.unsplash.com/photo-1544085311-11a028465b03?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            color: #f3f4f6;
+            padding: 85px 10px 75px 10px;
+            overflow-x: hidden;
+            transition: background 0.4s ease;
+        }
+
+        /* ÜST GEZİNTİ BARI */
+        .top-navbar {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 60px;
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 20px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6));
+            backdrop-filter: blur(8px);
+            z-index: 500; 
+            font-family: system-ui, -apple-system, sans-serif;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .book-info-left { display: flex; align-items: center; gap: 12px; }
+        .book-info-left i { font-size: 18px; color: #f8fafc; }
+        .book-titles { display: flex; flex-direction: column; }
+        .book-main-title { font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; }
+        .book-author-name { font-size: 11px; color: #94a3b8; font-weight: 500; }
+
+        .top-actions-right { display: flex; align-items: center; gap: 14px; }
+        
+        .top-icon-btn {
+            background: transparent; border: none; color: #f8fafc; font-size: 17px;
+            cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Spotify / Müzik Çalar Butonu */
+        .btn-spotify-trigger {
+            background: rgba(29, 185, 84, 0.15);
+            border: 1px solid rgba(29, 185, 84, 0.4);
+            color: #1db954;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-spotify-trigger:hover {
+            background: rgba(29, 185, 84, 0.3);
+        }
+
+        .font-size-text { font-family: 'Cormorant Garamond', serif; font-weight: bold; font-size: 19px; }
+
+        .bottom-navbar {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0));
+            z-index: 500; font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .quick-page-slider { display: flex; flex-direction: column; gap: 4px; width: 110px; }
+        .page-counter-text { font-size: 12px; color: #e2e8f0; font-weight: 500; }
+        .page-range-input { -webkit-appearance: none; width: 100%; height: 3px; background: rgba(255, 255, 255, 0.3); border-radius: 2px; outline: none; }
+        .page-range-input::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #ffffff; cursor: pointer; }
+
+        .center-nav-group { display: flex; align-items: center; gap: 12px; }
+        .nav-arrow-btn { background: transparent; border: none; color: #ffffff; font-size: 16px; cursor: pointer; padding: 6px; }
+
+        .page-change-pill {
+            background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25); padding: 7px 14px; border-radius: 20px;
+            color: #ffffff; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer;
+        }
+
+        .bottom-actions-right { display: flex; align-items: center; gap: 16px; }
+
+        /* 3D SİMÜLASYON */
+        .book-container {
+            width: 100%; max-width: 370px; height: 530px;
+            perspective: 1800px; position: relative; margin: auto; touch-action: pan-y;
+        }
+
+        .book { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
+
+        .page {
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+            transform-origin: left center;
+            will-change: transform, box-shadow, opacity;
+            transition: transform 2.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                        box-shadow 2.4s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                        opacity 2.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-style: preserve-3d;
+            background: linear-gradient(to right, #e2d6be 0%, #f4ecd8 4%, #fbf8f0 50%, #f4ecd8 96%, #dfd1b5 100%);
+            color: #2b2b2a; border-radius: 2px 8px 8px 2px;
+            border: 1px solid rgba(150, 130, 100, 0.35);
+            box-shadow: inset 14px 0 18px -6px rgba(0, 0, 0, 0.28), inset -3px 0 8px -4px rgba(0, 0, 0, 0.1), 4px 8px 20px rgba(0, 0, 0, 0.3);
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 40px 28px 25px 32px; user-select: none;
+            backface-visibility: hidden; pointer-events: none; opacity: 0; z-index: 1;
+        }
+
+        .page.active {
+            opacity: 1; pointer-events: auto; 
+            transform: rotateY(0deg) rotateZ(0deg) skewY(0deg); 
+            z-index: 100;
+        }
+
+        .page.flipped {
+            opacity: 1; pointer-events: none;
+            transform: rotateY(-180deg) rotateZ(-7deg) skewY(4deg); 
+            z-index: 5;
+            box-shadow: inset -22px 0 30px -6px rgba(0, 0, 0, 0.4), -20px 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .page.next-stack {
+            opacity: 1; pointer-events: none; transform: rotateY(0deg) rotateZ(0deg) skewY(0deg); z-index: 2;
+        }
+
+        .page.cover-page { background: #1a1a1a !important; padding: 0 !important; border: none !important; overflow: hidden; }
+        .cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .author-mode-active .page:not(.cover-page) { border: 2px dashed #8b5cf6 !important; }
+
+        .page-content {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 17.5px; line-height: 1.55; letter-spacing: 0.15px;
+            text-align: justify; height: 100%; overflow-y: auto; outline: none;
+            padding-right: 2px; color: #232322; transition: all 0.3s ease;
+        }
+
+        .page-content p { margin-bottom: 0px; text-indent: 1.5em; transition: text-indent 0.3s ease; }
+        .page-content p:first-of-type { text-indent: 0; }
+
+        .chapter-title {
+            text-align: center; font-size: 21px; font-weight: 600;
+            letter-spacing: 3px; text-transform: uppercase; margin-top: 10px; margin-bottom: 22px; color: #1a1a19;
+        }
+        .chapter-title::after { content: '❖'; display: block; font-size: 10px; margin-top: 6px; color: #7d7261; }
+
+        .first-letter { font-size: 52px; float: left; line-height: 0.8; padding-top: 4px; padding-right: 8px; font-weight: 700; color: #111; }
+        .page-number { text-align: center; font-size: 14px; color: #61584c; margin-top: 10px; letter-spacing: 1px; }
+
+        body.night-mode { background-color: #0b0f19 !important; background-image: none !important; }
+        body.night-mode .page { background: #181d28 !important; color: #c2c9d6 !important; border-color: #2a3245 !important; }
+        body.night-mode .page-content { color: #cbd5e1 !important; }
+        body.night-mode .chapter-title, body.night-mode .first-letter { color: #f1f5f9 !important; }
+
+        /* MODAL YAPISI */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); z-index: 1000;
+            align-items: center; justify-content: center; font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 22px; border-radius: 16px; width: 90%; max-width: 390px;
+            display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.7); color: white; max-height: 85vh; overflow-y: auto;
+        }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px; }
+        .modal-title { font-size: 16px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .close-modal-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; }
+
+        /* SPOTIFY TARZI ŞIK MÜZİK ÇALAR KUTUSU */
+        .spotify-player-box {
+            background: #121212;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .spotify-track-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .spotify-album-art {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #282828, #181818);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1db954;
+            font-size: 22px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .spotify-meta {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .spotify-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .spotify-artist {
+            font-size: 11px;
+            color: #b3b3b3;
+            margin-top: 2px;
+        }
+
+        .spotify-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 4px;
+        }
+
+        .spotify-ctrl-btn {
+            background: transparent;
+            border: none;
+            color: #b3b3b3;
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .spotify-ctrl-btn:hover { color: #ffffff; }
+
+        .spotify-play-main {
+            width: 38px;
+            height: 38px;
+            background: #1db954;
+            color: #000000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            border: none;
+        }
+        .spotify-play-main:hover { transform: scale(1.06); background: #1ed760; }
+
+        /* ŞARKI LİSTESİ (Kompakt Kaydırılabilir) */
+        .playlist-container {
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-right: 2px;
+        }
+        .playlist-container::-webkit-scrollbar { width: 4px; }
+        .playlist-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 12px;
+        }
+        .playlist-item:hover { background: rgba(255,255,255,0.08); }
+        .playlist-item.playing {
+            background: rgba(29, 185, 84, 0.15);
+            border-left: 3px solid #1db954;
+        }
+        .playlist-item-left { display: flex; align-items: center; gap: 8px; overflow: hidden; }
+        .playlist-item-left span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e2e8f0; }
+        .playlist-item.playing .playlist-item-left span { color: #1db954; font-weight: bold; }
+
+        /* DİĞER MODAL BİLEŞENLERİ */
+        .accordion-btn {
+            width: 100%; background: rgba(30, 41, 59, 0.8); color: #f8fafc;
+            border: 1px solid rgba(255,255,255,0.15); padding: 12px; border-radius: 10px;
+            font-size: 13.5px; font-weight: 600; display: flex; align-items: center;
+            justify-content: space-between; cursor: pointer;
+        }
+
+        .accordion-content {
+            display: none; flex-direction: column; gap: 8px;
+            padding: 10px; background: rgba(255,255,255,0.03);
+            border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1); margin-top: -4px;
+        }
+        .accordion-content.open { display: flex; }
+
+        .panel-group { display: flex; flex-direction: column; gap: 6px; }
+        .panel-label { font-size: 11px; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        button.btn-action {
+            padding: 11px; background: rgba(30, 41, 59, 0.9); color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px;
+            font-weight: bold; font-size: 13px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 8px;
+        }
+
+        .btn-author-toggle { background: rgba(124, 58, 237, 0.85) !important; }
+        .btn-author-toggle.active { background: rgba(16, 185, 129, 0.85) !important; }
+        .btn-advanced-panel { background: rgba(217, 119, 6, 0.85) !important; }
+        .btn-save-final { background: rgba(5, 150, 105, 0.95) !important; margin-top: 6px; }
+
+        .btn-add-bm-trigger { background: #2563eb; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
+        .bookmark-tab-list { list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; }
+        .bookmark-tab-item { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; }
+        .bookmark-info { display: flex; align-items: center; justify-content: space-between; flex-grow: 1; cursor: pointer; }
+        .bookmark-actions { display: flex; gap: 4px; }
+        .bm-action-btn { background: transparent; border: none; color: #94a3b8; font-size: 13px; cursor: pointer; padding: 3px; }
+
+        .password-input, .input-field, select.select-field {
+            padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(30, 41, 59, 0.9); color: white; font-size: 13px; outline: none; width: 100%;
+        }
+
+        #toast {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.95); backdrop-filter: blur(8px);
+            color: white; padding: 10px 20px; border-radius: 30px;
+            display: none; z-index: 2000; font-size: 13px; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ÜST GEZİNTİ BARI -->
+    <header class="top-navbar">
+        <div class="book-info-left">
+            <i class="fa-solid fa-book-open"></i>
+            <div class="book-titles">
+                <span class="book-main-title">NAERAVON</span>
+                <span class="book-author-name">RENAS BİLEK</span>
+            </div>
+        </div>
+        <div class="top-actions-right">
+            <!-- Spotify Tarzı Müzik Çalar Butonu -->
+            <button class="btn-spotify-trigger" id="btn-open-spotify-modal" title="Müzik Çalar"><i class="fa-brands fa-spotify"></i></button>
+            <button class="top-icon-btn" id="btn-toggle-night" title="Gece Modu"><i class="fa-regular fa-moon"></i></button>
+            <button class="top-icon-btn" id="btn-font-size" title="Font Boyutu"><span class="font-size-text">Aa</span></button>
+            <button class="top-icon-btn" id="btn-open-bookmark-tab" title="Yer İmleri"><i class="fa-regular fa-bookmark"></i></button>
+            <button class="top-icon-btn" id="btn-open-menu" title="Yazar Paneli"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- KİTAP GÖVDESİ -->
+    <div class="book-container" id="book-container">
+        <div class="book" id="book">
+            <div class="page cover-page active">
+                <img id="main-cover-img" src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=800&q=80" alt="Kitap Kapağı" class="cover-img">
+            </div>
+
+            <div class="page">
+                <div class="page-content" contenteditable="false">
+                    <div class="chapter-title">BÖLÜM 1</div>
+                    <p><span class="first-letter">K</span>üçük kasabanın taş sokaklarında yürürken, geçmişin kokusunu hâlâ hissedebiliyordu. Her taş, her duvar sanki yıllar önce yaşanmış hikâyeleri fısıldıyordu.</p>
+                    <p>Gökyüzü, gün batımının son renkleriyle yanarken, uzaklarda dağların silueti mor bir perde gibi uzanıyordu. Elindeki kâğıt parçasını cebine tekrar koydu ve derin bir nefes aldı.</p>
+                </div>
+                <div class="page-number">— 1 —</div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" contenteditable="false">
+                    <p>Yoluna devam etti. Karşısına çıkan her manzara, her insan, her detay, ona geçmişteki hatıralarını ve gelecekteki hayallerini hatırlatıyordu. Bu kasaba, sadece bir yer değil, aynı zamanda bir duyguydu.</p>
+                    <p>Ve o duygu, sanki yıllardır içinde sakladığı tüm sorulara tek bir cevap veriyordu.</p>
+                </div>
+                <div class="page-number">— 2 —</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALT GEZİNTİ BARI -->
+    <footer class="bottom-navbar">
+        <div class="quick-page-slider">
+            <span class="page-counter-text" id="page-counter-display">0 / 2</span>
+            <input type="range" id="page-slider-range" class="page-range-input" min="0" max="2" value="0">
+        </div>
+
+        <div class="center-nav-group">
+            <button class="nav-arrow-btn" id="btn-prev-arrow"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="page-change-pill" id="btn-center-change-page">
+                <i class="fa-solid fa-book-open-reader"></i> Sayfa Değiştir
+            </div>
+            <button class="nav-arrow-btn" id="btn-next-arrow"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+
+        <div class="bottom-actions-right">
+            <button class="top-icon-btn" id="btn-settings-dummy" title="Ayarlar"><i class="fa-solid fa-gear"></i></button>
+            <button class="top-icon-btn" id="btn-fullscreen-toggle" title="Tam Ekran"><i class="fa-solid fa-expand"></i></button>
+        </div>
+    </footer>
+
+    <!-- SPOTIFY STİLİ MÜZİK ÇALAR MODALI -->
+    <div class="modal" id="spotify-link-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-brands fa-spotify" style="color: #1db954;"></i> Naeravon Ambient Arşivi</div>
+                <button class="close-modal-btn" id="close-spotify-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Spotify Widget Görünümü -->
+            <div class="spotify-player-box">
+                <div class="spotify-track-info">
+                    <div class="spotify-album-art">
+                        <i class="fa-solid fa-compact-disc fa-spin" id="disc-icon" style="animation-duration: 4s;"></i>
+                    </div>
+                    <div class="spotify-meta">
+                        <span class="spotify-title" id="current-track-title">Dark Fantasy Atmosphere</span>
+                        <span class="spotify-artist" id="current-track-artist">Naeravon OST</span>
+                    </div>
+                </div>
+
+                <div class="spotify-controls">
+                    <button class="spotify-ctrl-btn" id="btn-prev-track" title="Önceki Şarkı"><i class="fa-solid fa-backward-step"></i></button>
+                    <button class="spotify-play-main" id="btn-play-pause"><i class="fa-solid fa-play" id="play-pause-icon"></i></button>
+                    <button class="spotify-ctrl-btn" id="btn-next-track" title="Sonraki Şarkı"><i class="fa-solid fa-forward-step"></i></button>
+                </div>
+            </div>
+
+            <!-- Şarkı Listesi -->
+            <div class="playlist-container" id="playlist-ul">
+                <!-- Javascript ile dinamik dolacak -->
+            </div>
+        </div>
+    </div>
+
+    <!-- YER İMLERİ MODALI -->
+    <div class="modal" id="bookmark-tab-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-bookmark" style="color: #38bdf8;"></i> Yer İmleri</div>
+                <button class="close-modal-btn" id="close-bookmark-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <button class="btn-add-bm-trigger" id="btn-add-new-bm"><i class="fa-solid fa-plus"></i> Yer İmi Ekle</button>
+            <ul class="bookmark-tab-list" id="bookmark-modal-ul"></ul>
+        </div>
+    </div>
+
+    <!-- ŞİFRE MODALI -->
+    <div class="modal" id="password-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-lock"></i> Şifreli Giriş</div>
+                <button class="close-modal-btn" id="close-pass-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="password" id="author-pass-input" class="password-input" placeholder="Şifreniz..." style="text-align: center;">
+            <button id="btn-submit-pass" class="btn-action" style="background: rgba(124, 58, 237, 0.9);">Giriş Yap</button>
+        </div>
+    </div>
+
+    <!-- YAZAR PANELİ MODALI -->
+    <div class="modal" id="author-panel-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-feather-pointed"></i> Yazar Kontrol Paneli</div>
+                <button class="close-modal-btn" id="close-panel-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="panel-group">
+                <button id="btn-toggle-author" class="btn-action btn-author-toggle">✍️ Metin Düzenlemeyi Aç</button>
+                <button id="btn-add-page-panel" class="btn-action"><i class="fa-solid fa-plus"></i> + Yeni Sayfa Ekle</button>
+            </div>
+
+            <button id="btn-open-advanced-panel" class="btn-action btn-advanced-panel">
+                <i class="fa-solid fa-sliders"></i> Detaylı Stil & Yazar Paneli
+            </button>
+
+            <button class="accordion-btn" id="acc-btn-images">
+                <span><i class="fa-solid fa-image"></i> Görsel Ayarları</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content" id="acc-content-images">
+                <label for="cover-upload" class="btn-action" style="background: rgba(217, 119, 6, 0.85);">📚 Kitap Kapağı Değiştir</label>
+                <input type="file" id="cover-upload" accept="image/*" style="display: none;">
+
+                <label for="bg-upload" class="btn-action" style="background: rgba(14, 165, 233, 0.85);">🌌 Arka Plan Değiştir</label>
+                <input type="file" id="bg-upload" accept="image/*" style="display: none;">
+            </div>
+
+            <button id="btn-save-all" class="btn-action btn-save-final"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
+        </div>
+    </div>
+
+    <!-- DETAYLI STİL MODALI -->
+    <div class="modal" id="advanced-author-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fa-solid fa-pen-nib" style="color: #f59e0b;"></i> Detaylı Ayarlar</div>
+                <button class="close-modal-btn" id="close-advanced-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="panel-group">
+                <span class="panel-label">Font Tipi (Yazı Stili):</span>
+                <select id="adv-font-family" class="select-field">
+                    <option value="'Cormorant Garamond', Georgia, serif">Cormorant Garamond (Roman & Klasik)</option>
+                    <option value="'Lora', serif">Lora (Geleneksel & Rahat Okuma)</option>
+                    <option value="'Playfair Display', serif">Playfair Display (Zarif & Başlık Odaklı)</option>
+                    <option value="'Cinzel', serif">Cinzel (Mistik & Epik)</option>
+                    <option value="'Merriweather', serif">Merriweather (Net & Keskin Roman)</option>
+                    <option value="'Montserrat', sans-serif">Montserrat (Modern & Düz)</option>
+                </select>
+            </div>
+
+            <div class="panel-group">
+                <span class="panel-label">Harf Kalınlığı (Font Weight):</span>
+                <select id="adv-font-weight" class="select-field">
+                    <option value="300">İnce (Light - 300)</option>
+                    <option value="400" selected>Normal (Regular - 400)</option>
+                    <option value="600">Yarı Kalın (Semi-Bold - 600)</option>
+                    <option value="700">Kalın (Bold - 700)</option>
+                </select>
+            </div>
+
+            <div class="panel-group">
+                <span class="panel-label">Satır Yüksekliği (Line Height):</span>
+                <select id="adv-line-height" class="select-field">
+                    <option value="1.3">Çok Sıkı (1.3)</option>
+                    <option value="1.55" selected>Standart Roman (1.55)</option>
+                    <option value="1.8">Geniş Boşluklu (1.8)</option>
+                    <option value="2.1">Çok Geniş (2.1)</option>
+                </select>
+            </div>
+
+            <div class="panel-group">
+                <span class="panel-label">Paragraf Girintisi (Indent):</span>
+                <select id="adv-text-indent" class="select-field">
+                    <option value="0em">Girintisiz (Düz)</option>
+                    <option value="1.5em" selected>Standart Roman (1.5em)</option>
+                    <option value="2.5em">Derin Paragraf (2.5em)</option>
+                </select>
+            </div>
+
+            <div class="panel-group">
+                <span class="panel-label">Sayfa İç Boşlukları (Padding):</span>
+                <select id="adv-page-padding" class="select-field">
+                    <option value="25px 18px">Dar Boşluk (Daha Çok Metin)</option>
+                    <option value="40px 28px 25px 32px" selected>Standart Kitap Marjı</option>
+                    <option value="55px 38px">Geniş Kenar Boşluğu</option>
+                </select>
+            </div>
+
+            <button id="btn-apply-advanced" class="btn-action btn-save-final"><i class="fa-solid fa-check"></i> Stilleri Kaydet & Kapat</button>
+        </div>
+    </div>
+
+    <div id="toast">İşlem Başarılı!</div>
+
+    <script>
+        // Telifsiz & Epik / Dark / Ambient Müzik Arşivi (16 Parça)
+        const playlist = [
+            { title: "Forest Lullaby", artist: "Lesfm (Pixabay)", src: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db80512803.mp3?filename=forest-lullaby-110624.mp3" },
+            { title: "Ambient Classical Guitar", artist: "Oleg Kirilkov", src: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=ambient-classical-guitar-14494.mp3" },
+            { title: "The Cradle of your Soul", artist: "Lemonmusicstudio", src: "https://cdn.pixabay.com/download/audio/2022/08/03/audio_2c4114777e.mp3?filename=the-cradle-of-your-soul-15700.mp3" },
+            { title: "Mystical Forest", artist: "Denys Kuznetsov", src: "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f792cb.mp3?filename=mystical-forest-120930.mp3" },
+            { title: "Epic Dark Trailer", artist: "Alex-Productions", src: "https://cdn.pixabay.com/download/audio/2022/06/14/audio_331393874b.mp3?filename=epic-dark-trailer-111453.mp3" },
+            { title: "Cinematic Time", artist: "Lexin_Music", src: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_2271295fc7.mp3?filename=cinematic-time-10902.mp3" },
+            { title: "Dark Fantasy Realm", artist: "SoundGallery", src: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c9769f518e.mp3?filename=dark-fantasy-10255.mp3" },
+            { title: "Meditation and Peace", artist: "Patex", src: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf756.mp3?filename=meditation-and-peace-112217.mp3" },
+            { title: "Pianos Ambient", artist: "Coma-Media", src: "https://cdn.pixabay.com/download/audio/2022/05/13/audio_744a5303ee.mp3?filename=documentary-ambient-110622.mp3" },
+            { title: "Emotional Cinematic", artist: "soundflakes", src: "https://cdn.pixabay.com/download/audio/2022/02/23/audio_b281f62175.mp3?filename=emotional-cinematic-11495.mp3" },
+            { title: "Fantasy World", artist: "Ashot Danielyan", src: "https://cdn.pixabay.com/download/audio/2022/04/27/audio_1fc3cb6f19.mp3?filename=fantasy-world-10940.mp3" },
+            { title: "Solitude (Piano)", artist: "WombatNoisesAudio", src: "https://cdn.pixabay.com/download/audio/2022/11/03/audio_6527581347.mp3?filename=solitude-123472.mp3" },
+            { title: "Night Vigil", artist: "MusicLFiles", src: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c25d886632.mp3?filename=night-vigil-10156.mp3" },
+            { title: "Secret of the Alchemist", artist: "Alex-Productions", src: "https://cdn.pixabay.com/download/audio/2023/01/10/audio_51a37827e8.mp3?filename=secret-of-the-alchemist-130541.mp3" },
+            { title: "Spiritual Awakening", artist: "Guro", src: "https://cdn.pixabay.com/download/audio/2022/06/10/audio_985558d710.mp3?filename=spiritual-awakening-111197.mp3" },
+            { title: "Deep Space Ambient", artist: "Dmitriy Sedov", src: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_2828ff79d3.mp3?filename=deep-space-ambient-14493.mp3" }
+        ];
+
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        const audio = new Audio();
+
+        const dbName = "BookAppDB";
+        let db;
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                request.onupgradeneeded = (e) => {
+                    db = e.target.result;
+                    if (!db.objectStoreNames.contains('store')) db.createObjectStore('store');
+                };
+                request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+                request.onerror = (e) => reject("DB Hatasi: " + e);
+            });
+        }
+
+        async function setDBData(key, val) {
+            if (!db) await initDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction('store', 'readwrite');
+                tx.objectStore('store').put(val, key);
+                tx.oncomplete = () => resolve();
+                tx.onerror = (e) => reject(e);
+            });
+        }
+
+        async function getDBData(key) {
+            if (!db) await initDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction('store', 'readonly');
+                const req = tx.objectStore('store').get(key);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = (e) => reject(e);
+            });
+        }
+
+        let currentPageIndex = 0;
+        let isAuthorMode = false;
+        let pages = [];
+        let bookmarks = [];
+        let currentAuthTarget = 'panel'; 
+        const AUTHOR_PASSWORD = "camaro";
+
+        async function saveAllDataNow() {
+            const bookHTML = document.getElementById('book').innerHTML;
+            await setDBData('PERMANENT_BOOK_HTML', bookHTML);
+
+            const imgEl = document.getElementById('main-cover-img');
+            if (imgEl) await setDBData('PERMANENT_COVER_IMG', imgEl.src);
+
+            const currentBg = document.body.style.backgroundImage;
+            if (currentBg) await setDBData('PERMANENT_BG_IMG', currentBg);
+
+            await setDBData('PERMANENT_BOOKMARKS', JSON.stringify(bookmarks));
+
+            const settings = {
+                fontFamily: document.getElementById('adv-font-family').value,
+                fontWeight: document.getElementById('adv-font-weight').value,
+                lineHeight: document.getElementById('adv-line-height').value,
+                textIndent: document.getElementById('adv-text-indent').value,
+                padding: document.getElementById('adv-page-padding').value
+            };
+            await setDBData('PERMANENT_BOOK_STYLES', JSON.stringify(settings));
+        }
+
+        function applyStylesDirectly() {
+            const font = document.getElementById('adv-font-family').value;
+            const weight = document.getElementById('adv-font-weight').value;
+            const lineHeight = document.getElementById('adv-line-height').value;
+            const textIndent = document.getElementById('adv-text-indent').value;
+            const padding = document.getElementById('adv-page-padding').value;
+
+            document.querySelectorAll('.page-content').forEach(el => {
+                el.style.fontFamily = font;
+                el.style.fontWeight = weight;
+                el.style.lineHeight = lineHeight;
+            });
+
+            document.querySelectorAll('.page-content p').forEach(p => {
+                p.style.textIndent = textIndent;
+            });
+
+            document.querySelectorAll('.page').forEach(p => {
+                if (!p.classList.contains('cover-page')) {
+                    p.style.padding = padding;
+                }
+            });
+        }
+
+        function updatePages() {
+            pages = document.querySelectorAll('.page');
+            const slider = document.getElementById('page-slider-range');
+            const counterText = document.getElementById('page-counter-display');
+
+            slider.max = pages.length - 1;
+            slider.value = currentPageIndex;
+            counterText.innerText = `${currentPageIndex} / ${pages.length - 1}`;
+
+            pages.forEach((page, index) => {
+                page.classList.remove('active', 'flipped', 'next-stack');
+                
+                if (index < currentPageIndex) {
+                    page.classList.add('flipped');
+                    page.style.zIndex = index;
+                } else if (index === currentPageIndex) {
+                    page.classList.add('active');
+                    page.style.zIndex = 100;
+                } else {
+                    page.classList.add('next-stack');
+                    page.style.zIndex = pages.length - index;
+                }
+            });
+        }
+
+        // Müzik Çalar Mantığı
+        function loadTrack(index) {
+            currentTrackIndex = index;
+            audio.src = playlist[index].src;
+            document.getElementById('current-track-title').innerText = playlist[index].title;
+            document.getElementById('current-track-artist').innerText = playlist[index].artist;
+            renderPlaylistUI();
+        }
+
+        function playTrack() {
+            isPlaying = true;
+            audio.play().catch(() => {});
+            document.getElementById('play-pause-icon').className = "fa-solid fa-pause";
+            document.getElementById('disc-icon').style.animationPlayState = "running";
+            renderPlaylistUI();
+        }
+
+        function pauseTrack() {
+            isPlaying = false;
+            audio.pause();
+            document.getElementById('play-pause-icon').className = "fa-solid fa-play";
+            document.getElementById('disc-icon').style.animationPlayState = "paused";
+        }
+
+        audio.addEventListener('ended', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            playTrack();
+        });
+
+        function renderPlaylistUI() {
+            const container = document.getElementById('playlist-ul');
+            container.innerHTML = '';
+            playlist.forEach((track, idx) => {
+                const item = document.createElement('div');
+                item.className = `playlist-item ${idx === currentTrackIndex ? 'playing' : ''}`;
+                item.innerHTML = `
+                    <div class="playlist-item-left">
+                        <i class="fa-solid ${idx === currentTrackIndex && isPlaying ? 'fa-volume-high' : 'fa-music'}" style="color: ${idx === currentTrackIndex ? '#1db954' : '#94a3b8'};"></i>
+                        <span>${track.title} - <small style="color:#94a3b8">${track.artist}</small></span>
+                    </div>
+                    <i class="fa-solid ${idx === currentTrackIndex && isPlaying ? 'fa-pause' : 'fa-play'}" style="font-size:10px; color:#b3b3b3;"></i>
+                `;
+                item.onclick = () => {
+                    if (currentTrackIndex === idx) {
+                        if (isPlaying) pauseTrack(); else playTrack();
+                    } else {
+                        loadTrack(idx);
+                        playTrack();
+                    }
+                };
+                container.appendChild(item);
+            });
+        }
+
+        function renderBookmarkModalList() {
+            const ul = document.getElementById('bookmark-modal-ul');
+            if (!ul) return;
+            ul.innerHTML = '';
+
+            if (bookmarks.length === 0) {
+                ul.innerHTML = '<li style="text-align:center; font-size:12px; color:#94a3b8; padding: 10px 0;">Henüz yer imi yok.</li>';
+                return;
+            }
+
+            bookmarks.forEach((bm, index) => {
+                const li = document.createElement('li');
+                li.className = 'bookmark-tab-item';
+                li.innerHTML = `
+                    <div class="bookmark-info">
+                        <span style="font-size:13px; font-weight:600;">${bm.name}</span>
+                        <span style="font-size:11px; color:#38bdf8; background:rgba(56,189,248,0.15); padding:2px 6px; border-radius:4px;">sf${bm.page}</span>
+                    </div>
+                    <div class="bookmark-actions">
+                        <button class="bm-action-btn edit" title="Düzenle"><i class="fa-solid fa-pen"></i></button>
+                        <button class="bm-action-btn delete" title="Sil"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                `;
+
+                li.querySelector('.bookmark-info').onclick = () => {
+                    currentPageIndex = bm.page;
+                    updatePages();
+                    document.getElementById('bookmark-tab-modal').style.display = 'none';
+                    showToast(`${bm.name} sayfasına gidildi`);
+                };
+
+                li.querySelector('.bm-action-btn.edit').onclick = (e) => {
+                    e.stopPropagation();
+                    const newName = prompt("Yer imi ismi:", bm.name);
+                    if (newName && newName.trim() !== "") {
+                        bookmarks[index].name = newName.trim();
+                        saveAllDataNow();
+                        renderBookmarkModalList();
+                    }
+                };
+
+                li.querySelector('.bm-action-btn.delete').onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm("Silmek istediğinize emin misiniz?")) {
+                        bookmarks.splice(index, 1);
+                        saveAllDataNow();
+                        renderBookmarkModalList();
+                    }
+                };
+
+                ul.appendChild(li);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            await initDB();
+
+            const savedData = await getDBData('PERMANENT_BOOK_HTML');
+            if (savedData) document.getElementById('book').innerHTML = savedData;
+
+            const savedCover = await getDBData('PERMANENT_COVER_IMG');
+            if (savedCover) {
+                const imgEl = document.getElementById('main-cover-img');
+                if (imgEl) imgEl.src = savedCover;
+            }
+
+            const savedBg = await getDBData('PERMANENT_BG_IMG');
+            if (savedBg) document.body.style.backgroundImage = savedBg;
+
+            const savedBookmarks = await getDBData('PERMANENT_BOOKMARKS');
+            if (savedBookmarks) {
+                try { bookmarks = JSON.parse(savedBookmarks); } catch(e){}
+            }
+
+            const savedStyles = await getDBData('PERMANENT_BOOK_STYLES');
+            if (savedStyles) {
+                try {
+                    const st = JSON.parse(savedStyles);
+                    if(st.fontFamily) document.getElementById('adv-font-family').value = st.fontFamily;
+                    if(st.fontWeight) document.getElementById('adv-font-weight').value = st.fontWeight;
+                    if(st.lineHeight) document.getElementById('adv-line-height').value = st.lineHeight;
+                    if(st.textIndent) document.getElementById('adv-text-indent').value = st.textIndent;
+                    if(st.padding) document.getElementById('adv-page-padding').value = st.padding;
+                } catch(e){}
+            }
+
+            updatePages();
+            applyStylesDirectly();
+            loadTrack(0);
+
+            // Müzik Çalar Modal Etkileşimleri
+            const spotifyModal = document.getElementById('spotify-link-modal');
+            document.getElementById('btn-open-spotify-modal').addEventListener('click', () => {
+                spotifyModal.style.display = 'flex';
+                renderPlaylistUI();
+            });
+            document.getElementById('close-spotify-modal').addEventListener('click', () => {
+                spotifyModal.style.display = 'none';
+            });
+
+            document.getElementById('btn-play-pause').addEventListener('click', () => {
+                if (isPlaying) pauseTrack(); else playTrack();
+            });
+
+            document.getElementById('btn-next-track').addEventListener('click', () => {
+                currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+                loadTrack(currentTrackIndex);
+                playTrack();
+            });
+
+            document.getElementById('btn-prev-track').addEventListener('click', () => {
+                currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+                loadTrack(currentTrackIndex);
+                playTrack();
+            });
+
+            ['adv-font-family', 'adv-font-weight', 'adv-line-height', 'adv-text-indent', 'adv-page-padding'].forEach(id => {
+                document.getElementById(id).addEventListener('change', () => {
+                    applyStylesDirectly();
+                });
+            });
+
+            let touchStartX = 0;
+            let touchEndX = 0;
+            const bookContainer = document.getElementById('book-container');
+
+            bookContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            bookContainer.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+
+            function handleSwipe() {
+                const swipeThreshold = 40;
+                if (touchStartX - touchEndX > swipeThreshold) nextPaging();
+                if (touchEndX - touchStartX > swipeThreshold) prevPaging();
+            }
+
+            document.getElementById('btn-settings-dummy').addEventListener('click', () => {
+                currentAuthTarget = 'settings';
+                passInput.value = "";
+                passModal.style.display = 'flex';
+                passInput.focus();
+            });
+
+            document.getElementById('btn-fullscreen-toggle').addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => { showToast("Tam ekran başlatılamadı."); });
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                }
+            });
+
+            const setupAccordion = (btnId, contentId) => {
+                const btn = document.getElementById(btnId);
+                const content = document.getElementById(contentId);
+                btn.addEventListener('click', () => {
+                    content.classList.toggle('open');
+                    const icon = btn.querySelector('.fa-chevron-down');
+                    if (icon) icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+                });
+            };
+
+            setupAccordion('acc-btn-images', 'acc-content-images');
+
+            document.getElementById('btn-toggle-night').addEventListener('click', () => {
+                document.body.classList.toggle('night-mode');
+            });
+
+            let currentFontSize = 17.5;
+            document.getElementById('btn-font-size').addEventListener('click', () => {
+                currentFontSize += 1.5;
+                if (currentFontSize > 22) currentFontSize = 15;
+                document.querySelectorAll('.page-content').forEach(el => el.style.fontSize = currentFontSize + 'px');
+                showToast("Yazı Boyutu: " + Math.round(currentFontSize) + "px");
+            });
+
+            const bmModal = document.getElementById('bookmark-tab-modal');
+            document.getElementById('btn-open-bookmark-tab').addEventListener('click', () => {
+                renderBookmarkModalList();
+                bmModal.style.display = 'flex';
+            });
+            document.getElementById('close-bookmark-modal').addEventListener('click', () => bmModal.style.display = 'none');
+
+            document.getElementById('btn-add-new-bm').addEventListener('click', () => {
+                const name = prompt("İsim yaz:");
+                if (name && name.trim() !== "") {
+                    bookmarks.push({ name: name.trim(), page: currentPageIndex });
+                    saveAllDataNow();
+                    renderBookmarkModalList();
+                }
+            });
+
+            document.getElementById('page-slider-range').addEventListener('input', (e) => {
+                currentPageIndex = parseInt(e.target.value);
+                updatePages();
+            });
+
+            const nextPaging = () => {
+                pages = document.querySelectorAll('.page');
+                if (currentPageIndex < pages.length - 1) { currentPageIndex++; updatePages(); }
+            };
+            const prevPaging = () => {
+                if (currentPageIndex > 0) { currentPageIndex--; updatePages(); }
+            };
+
+            document.getElementById('btn-next-arrow').addEventListener('click', nextPaging);
+            document.getElementById('btn-prev-arrow').addEventListener('click', prevPaging);
+            document.getElementById('btn-center-change-page').addEventListener('click', nextPaging);
+
+            const passModal = document.getElementById('password-modal');
+            const panelModal = document.getElementById('author-panel-modal');
+            const passInput = document.getElementById('author-pass-input');
+
+            document.getElementById('btn-open-menu').addEventListener('click', () => {
+                currentAuthTarget = 'panel';
+                passInput.value = "";
+                passModal.style.display = 'flex';
+                passInput.focus();
+            });
+
+            document.getElementById('close-pass-modal').addEventListener('click', () => passModal.style.display = 'none');
+            document.getElementById('close-panel-modal').addEventListener('click', () => panelModal.style.display = 'none');
+
+            document.getElementById('btn-submit-pass').addEventListener('click', checkPassword);
+            passInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPassword(); });
+
+            function checkPassword() {
+                if (passInput.value === AUTHOR_PASSWORD) {
+                    passModal.style.display = 'none';
+                    if (currentAuthTarget === 'panel') {
+                        panelModal.style.display = 'flex';
+                    } else if (currentAuthTarget === 'settings') {
+                        advModal.style.display = 'flex';
+                    }
+                } else {
+                    showToast("❌ Hatalı Şifre!");
+                }
+            }
+
+            const advModal = document.getElementById('advanced-author-modal');
+            document.getElementById('btn-open-advanced-panel').addEventListener('click', () => {
+                advModal.style.display = 'flex';
+            });
+            document.getElementById('close-advanced-modal').addEventListener('click', () => advModal.style.display = 'none');
+
+            document.getElementById('btn-apply-advanced').addEventListener('click', () => {
+                applyStylesDirectly();
+                saveAllDataNow();
+                advModal.style.display = 'none';
+                showToast("Stiller Kaydedildi!");
+            });
+
+            const toggleAuthorBtn = document.getElementById('btn-toggle-author');
+            toggleAuthorBtn.addEventListener('click', () => {
+                isAuthorMode = !isAuthorMode;
+                document.body.classList.toggle('author-mode-active', isAuthorMode);
+
+                if (isAuthorMode) {
+                    toggleAuthorBtn.innerText = "✍️ Metin Düzenleme: AÇIK";
+                    toggleAuthorBtn.classList.add('active');
+                    enableEditing(true);
+                } else {
+                    toggleAuthorBtn.innerText = "✍️ Metin Düzenlemeyi Aç";
+                    toggleAuthorBtn.classList.remove('active');
+                    enableEditing(false);
+                    saveAllDataNow();
+                }
+            });
+
+            function enableEditing(enable) {
+                document.querySelectorAll('.page-content').forEach(content => {
+                    content.contentEditable = enable ? "true" : "false";
+                });
+            }
+
+            document.getElementById('btn-add-page-panel').addEventListener('click', () => {
+                const bookEl = document.getElementById('book');
+                const pageCount = document.querySelectorAll('.page').length;
+
+                const newPage = document.createElement('div');
+                newPage.className = 'page';
+                newPage.innerHTML = `
+                    <div class="page-content" contenteditable="${isAuthorMode ? 'true' : 'false'}">
+                        <p>Yeni sayfa içeriğinizi yazın...</p>
+                    </div>
+                    <div class="page-number">— ${pageCount} —</div>
+                `;
+
+                bookEl.appendChild(newPage);
+                currentPageIndex = pageCount;
+                updatePages();
+                applyStylesDirectly();
+                saveAllDataNow();
+                showToast("Yeni Sayfa Eklendi!");
+            });
+
+            document.getElementById('cover-upload').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const imgEl = document.getElementById('main-cover-img');
+                        if (imgEl) imgEl.src = event.target.result;
+                        saveAllDataNow();
+                        showToast("Kapak Güncellendi!");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('bg-upload').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        document.body.style.backgroundImage = `url('${event.target.result}')`;
+                        saveAllDataNow();
+                        showToast("Arka Plan Güncellendi!");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('btn-save-all').addEventListener('click', () => {
+                saveAllDataNow();
+                panelModal.style.display = 'none';
+                showToast("Tüm Değişiklikler Kaydedildi!");
+            });
+
+            function showToast(msg) {
+                const toast = document.getElementById('toast');
+                toast.innerText = msg;
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 2200);
+            }
+        });
+    </script>
+</body>
+</html>
