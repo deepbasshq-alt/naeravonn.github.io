@@ -133,9 +133,6 @@
             backface-visibility: hidden; pointer-events: none; opacity: 0; z-index: 1;
         }
 
-        /* Sayfanın arka yüzü: dönüş 90°'yi geçtiğinde görünen, ön yüzle
-           ters orantılı (rotateY 180deg) düz bir "kağıt arkası" katmanı.
-           Bu olmadan sayfa 90°'de birden kayboluyor ve karton gibi hissettiriyordu. */
         .page:not(.cover-page)::before {
             content: '';
             position: absolute; inset: 0;
@@ -165,14 +162,6 @@
             opacity: 1; pointer-events: none; transform: rotateY(0deg); z-index: 2;
         }
 
-        /* Sayfa çevirme anı: sabit köşeden gerçekçi kıvrım — dönüş ortasında
-           (sayfa kameraya diklemesine geldiğinde) gölge koyulaşıp kalınlaşıyor,
-           uçlara doğru normale dönüyor. Sadece o an çevrilen tek sayfaya
-           uygulandığı için performans maliyeti düşük. */
-        /* Sayfa çevirme anı: dönüş ortasında (sayfa kameraya diklemesine
-           geldiğinde) hafif bir kıvrım gölgesi belirip kayboluyor. Bu katman
-           sadece opacity animasyonu kullanır (box-shadow bulanıklığı GİBİ
-           pahalı değildir), bu yüzden büyük kitap boyutunda bile kasmaz. */
         .page::after {
             content: '';
             position: absolute; inset: 0;
@@ -253,7 +242,6 @@
         .modal-title { font-size: 16px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
         .close-modal-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; }
 
-        /* SPOTIFY TARZI ŞIK MÜZİK ÇALAR KUTUSU */
         .spotify-player-box {
             background: #121212;
             border-radius: 12px;
@@ -340,7 +328,6 @@
         }
         .spotify-play-main:hover { transform: scale(1.06); background: #1ed760; }
 
-        /* ŞARKI LİSTESİ (Kompakt Kaydırılabilir) */
         .playlist-container {
             max-height: 220px;
             overflow-y: auto;
@@ -372,7 +359,6 @@
         .playlist-item-left span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e2e8f0; }
         .playlist-item.playing .playlist-item-left span { color: #1db954; font-weight: bold; }
 
-        /* DİĞER MODAL BİLEŞENLERİ */
         .accordion-btn {
             width: 100%; background: rgba(30, 41, 59, 0.8); color: #f8fafc;
             border: 1px solid rgba(255,255,255,0.15); padding: 12px; border-radius: 10px;
@@ -401,6 +387,7 @@
         .btn-author-toggle.active { background: rgba(16, 185, 129, 0.85) !important; }
         .btn-advanced-panel { background: rgba(217, 119, 6, 0.85) !important; }
         .btn-save-final { background: rgba(5, 150, 105, 0.95) !important; margin-top: 6px; }
+        .btn-save-final:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .btn-add-bm-trigger { background: #2563eb; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
         .bookmark-tab-list { list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; }
@@ -420,18 +407,19 @@
             color: white; padding: 10px 20px; border-radius: 30px;
             display: none; z-index: 2000; font-size: 13px; font-weight: bold;
         }
+        #toast.toast-error { background: rgba(220, 38, 38, 0.95); }
 
-        /* PERFORMANS: fixed arka plan mobilde scroll sırasında yeniden çizilip
-           kasmaya sebep olur (özellikle iOS/Android tarayıcılarda). Tablet ve
-           altı ekranlarda 'scroll' yapıyoruz. */
+        #save-status-dot {
+            position: fixed; top: 66px; right: 10px; z-index: 900;
+            font-size: 11px; color: #94a3b8; background: rgba(0,0,0,0.5);
+            padding: 4px 10px; border-radius: 12px; display: none;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
         @media (max-width: 768px) {
             body { background-attachment: scroll; }
         }
 
-        /* MOBİL OKUMA OPTİMİZASYONU: Kitabı genişletip, kenar boşluklarını ve
-           satır aralığını sıkılaştırarak sayfa başına daha fazla kelime sığdırır,
-           yazı yine de rahat okunur kalır. Tasarımın orantıları (gölge, radius,
-           renkler) aynı kalır, sadece ölçüler ekrana göre uyarlanır. */
         @media (max-width: 480px) {
             body { padding: 78px 6px 68px 6px; }
             .book-container { max-width: 87vw; height: 74vh; }
@@ -446,13 +434,11 @@
             .page-content { font-size: 15px; }
         }
     </style>
-    <!-- ORTAK VERİ SENKRONİZASYONU İÇİN FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
 
-    <!-- ÜST GEZİNTİ BARI -->
     <header class="top-navbar">
         <div class="book-info-left">
             <i class="fa-solid fa-book-open"></i>
@@ -462,7 +448,6 @@
             </div>
         </div>
         <div class="top-actions-right">
-            <!-- Spotify Tarzı Müzik Çalar Butonu -->
             <button class="btn-spotify-trigger" id="btn-open-spotify-modal" title="Müzik Çalar"><i class="fa-brands fa-spotify"></i></button>
             <button class="top-icon-btn" id="btn-toggle-night" title="Gece Modu"><i class="fa-regular fa-moon"></i></button>
             <button class="top-icon-btn" id="btn-font-size" title="Font Boyutu"><span class="font-size-text">Aa</span></button>
@@ -471,7 +456,8 @@
         </div>
     </header>
 
-    <!-- KİTAP GÖVDESİ -->
+    <div id="save-status-dot">●</div>
+
     <div class="book-container" id="book-container">
         <div class="book" id="book">
             <div class="page cover-page active">
@@ -497,7 +483,6 @@
         </div>
     </div>
 
-    <!-- ALT GEZİNTİ BARI -->
     <footer class="bottom-navbar">
         <div class="quick-page-slider">
             <span class="page-counter-text" id="page-counter-display">0 / 2</span>
@@ -518,7 +503,6 @@
         </div>
     </footer>
 
-    <!-- SPOTIFY STİLİ MÜZİK ÇALAR MODALI -->
     <div class="modal" id="spotify-link-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -526,7 +510,6 @@
                 <button class="close-modal-btn" id="close-spotify-modal"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <!-- Spotify Widget Görünümü -->
             <div class="spotify-player-box">
                 <div class="spotify-track-info">
                     <div class="spotify-album-art">
@@ -545,14 +528,10 @@
                 </div>
             </div>
 
-            <!-- Şarkı Listesi -->
-            <div class="playlist-container" id="playlist-ul">
-                <!-- Javascript ile dinamik dolacak -->
-            </div>
+            <div class="playlist-container" id="playlist-ul"></div>
         </div>
     </div>
 
-    <!-- YER İMLERİ MODALI -->
     <div class="modal" id="bookmark-tab-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -564,7 +543,6 @@
         </div>
     </div>
 
-    <!-- ŞİFRE MODALI -->
     <div class="modal" id="password-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -576,7 +554,6 @@
         </div>
     </div>
 
-    <!-- YAZAR PANELİ MODALI -->
     <div class="modal" id="author-panel-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -609,7 +586,6 @@
         </div>
     </div>
 
-    <!-- DETAYLI STİL MODALI -->
     <div class="modal" id="advanced-author-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -699,8 +675,7 @@
         const audio = new Audio();
 
         // ==========================================================
-        // ORTAK VERİ DEPOSU (FIREBASE) — Tüm cihazlar aynı veriyi görür
-        // Kendi Firebase projenin bilgilerini aşağıya yapıştır.
+        // ORTAK VERİ DEPOSU (FIREBASE)
         // ==========================================================
         const firebaseConfig = {
             databaseURL: "https://naeravon-default-rtdb.firebaseio.com/"
@@ -733,7 +708,6 @@
             return snapshot.exists() ? snapshot.val() : null;
         }
 
-        // Başka bir cihazda değişiklik yapılınca bu cihazı otomatik günceller
         function listenForRemoteChanges() {
             if (!fbDb) return;
             fbDb.ref('naeravon_book/PERMANENT_BOOK_HTML').on('value', (snapshot) => {
@@ -754,26 +728,62 @@
         let currentAuthTarget = 'panel'; 
         const AUTHOR_PASSWORD = "camaro";
 
-        async function saveAllDataNow() {
-            const bookHTML = document.getElementById('book').innerHTML;
-            await setDBData('PERMANENT_BOOK_HTML', bookHTML);
+        // --- YENİ: kayıt durumu takibi ---
+        let isSaving = false;
+        let hasUnsavedChanges = false;
+        let autosaveTimer = null;
 
-            const imgEl = document.getElementById('main-cover-img');
-            if (imgEl) await setDBData('PERMANENT_COVER_IMG', imgEl.src);
+        function setSaveStatusDot(text) {
+            const dot = document.getElementById('save-status-dot');
+            if (!text) { dot.style.display = 'none'; return; }
+            dot.innerText = text;
+            dot.style.display = 'block';
+        }
 
-            const currentBg = document.body.style.backgroundImage;
-            if (currentBg) await setDBData('PERMANENT_BG_IMG', currentBg);
+        // saveAllDataNow artık: (1) tamamlanmadan önce başarı mesajı vermiyor,
+        // (2) hata olursa yakalayıp kullanıcıyı uyarıyor, (3) yerel yedek bırakıyor.
+        async function saveAllDataNow(silent) {
+            if (isSaving) return false; // aynı anda çakışan kayıtları önle
+            isSaving = true;
+            setSaveStatusDot('Kaydediliyor...');
+            if (!silent) showToast("Kaydediliyor...");
+            try {
+                const bookHTML = document.getElementById('book').innerHTML;
+                await setDBData('PERMANENT_BOOK_HTML', bookHTML);
 
-            await setDBData('PERMANENT_BOOKMARKS', JSON.stringify(bookmarks));
+                const imgEl = document.getElementById('main-cover-img');
+                if (imgEl) await setDBData('PERMANENT_COVER_IMG', imgEl.src);
 
-            const settings = {
-                fontFamily: document.getElementById('adv-font-family').value,
-                fontWeight: document.getElementById('adv-font-weight').value,
-                lineHeight: document.getElementById('adv-line-height').value,
-                textIndent: document.getElementById('adv-text-indent').value,
-                padding: document.getElementById('adv-page-padding').value
-            };
-            await setDBData('PERMANENT_BOOK_STYLES', JSON.stringify(settings));
+                const currentBg = document.body.style.backgroundImage;
+                if (currentBg) await setDBData('PERMANENT_BG_IMG', currentBg);
+
+                await setDBData('PERMANENT_BOOKMARKS', JSON.stringify(bookmarks));
+
+                const settings = {
+                    fontFamily: document.getElementById('adv-font-family').value,
+                    fontWeight: document.getElementById('adv-font-weight').value,
+                    lineHeight: document.getElementById('adv-line-height').value,
+                    textIndent: document.getElementById('adv-text-indent').value,
+                    padding: document.getElementById('adv-page-padding').value
+                };
+                await setDBData('PERMANENT_BOOK_STYLES', JSON.stringify(settings));
+
+                // Tarayıcıya da yedek bırak: internet giderse veya Firebase
+                // erişilemezse bile son yazılanlar bu cihazda kaybolmasın.
+                try { localStorage.setItem('naeravon_local_backup', bookHTML); } catch (e) {}
+
+                hasUnsavedChanges = false;
+                setSaveStatusDot(null);
+                if (!silent) showToast("✅ Kaydedildi!");
+                isSaving = false;
+                return true;
+            } catch (err) {
+                console.error("KAYIT HATASI:", err);
+                setSaveStatusDot('❌ kaydedilemedi');
+                showToast("❌ Kayıt başarısız! İnternet bağlantını kontrol et.", true);
+                isSaving = false;
+                return false;
+            }
         }
 
         function applyStylesDirectly() {
@@ -826,7 +836,6 @@
             });
         }
 
-        // Müzik Çalar Mantığı
         function loadTrack(index) {
             currentTrackIndex = index;
             audio.src = playlist[index].src;
@@ -917,7 +926,7 @@
                     const newName = prompt("Yer imi ismi:", bm.name);
                     if (newName && newName.trim() !== "") {
                         bookmarks[index].name = newName.trim();
-                        saveAllDataNow();
+                        saveAllDataNow(true);
                         renderBookmarkModalList();
                     }
                 };
@@ -926,7 +935,7 @@
                     e.stopPropagation();
                     if (confirm("Silmek istediğinize emin misiniz?")) {
                         bookmarks.splice(index, 1);
-                        saveAllDataNow();
+                        saveAllDataNow(true);
                         renderBookmarkModalList();
                     }
                 };
@@ -938,24 +947,35 @@
         document.addEventListener('DOMContentLoaded', async function () {
             await initDB();
 
-            const savedData = await getDBData('PERMANENT_BOOK_HTML');
-            if (savedData) document.getElementById('book').innerHTML = savedData;
+            // Firebase'den okuma başarısız olursa (örn. internet yoksa)
+            // tarayıcıdaki en son yerel yedeğe düş.
+            try {
+                const savedData = await getDBData('PERMANENT_BOOK_HTML');
+                if (savedData) document.getElementById('book').innerHTML = savedData;
+            } catch (err) {
+                console.error("Firebase okuma hatası, yerel yedek deneniyor:", err);
+                const localBackup = localStorage.getItem('naeravon_local_backup');
+                if (localBackup) {
+                    document.getElementById('book').innerHTML = localBackup;
+                    showToast("⚠️ Çevrimdışı yedek yüklendi");
+                }
+            }
 
-            const savedCover = await getDBData('PERMANENT_COVER_IMG');
+            const savedCover = await getDBData('PERMANENT_COVER_IMG').catch(() => null);
             if (savedCover) {
                 const imgEl = document.getElementById('main-cover-img');
                 if (imgEl) imgEl.src = savedCover;
             }
 
-            const savedBg = await getDBData('PERMANENT_BG_IMG');
+            const savedBg = await getDBData('PERMANENT_BG_IMG').catch(() => null);
             if (savedBg) document.body.style.backgroundImage = savedBg;
 
-            const savedBookmarks = await getDBData('PERMANENT_BOOKMARKS');
+            const savedBookmarks = await getDBData('PERMANENT_BOOKMARKS').catch(() => null);
             if (savedBookmarks) {
                 try { bookmarks = JSON.parse(savedBookmarks); } catch(e){}
             }
 
-            const savedStyles = await getDBData('PERMANENT_BOOK_STYLES');
+            const savedStyles = await getDBData('PERMANENT_BOOK_STYLES').catch(() => null);
             if (savedStyles) {
                 try {
                     const st = JSON.parse(savedStyles);
@@ -972,7 +992,28 @@
             loadTrack(0);
             listenForRemoteChanges();
 
-            // Müzik Çalar Modal Etkileşimleri
+            // YENİ: yazarken 2.5 sn duraklamada otomatik (sessiz) kayıt.
+            // Böylece "Kaydet" butonuna basmayı/edit modunu kapatmayı unutsan bile
+            // yazdıkların birkaç saniye içinde otomatik kaydedilir.
+            document.getElementById('book').addEventListener('input', (e) => {
+                if (!e.target.classList || !e.target.classList.contains('page-content')) return;
+                hasUnsavedChanges = true;
+                setSaveStatusDot('Yazılıyor...');
+                clearTimeout(autosaveTimer);
+                autosaveTimer = setTimeout(() => {
+                    saveAllDataNow(true);
+                }, 2500);
+            });
+
+            // Sekmeyi kapatmadan/siteden çıkmadan önce kaydedilmemiş
+            // değişiklik varsa tarayıcı uyarı versin.
+            window.addEventListener('beforeunload', (e) => {
+                if (hasUnsavedChanges) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
             const spotifyModal = document.getElementById('spotify-link-modal');
             document.getElementById('btn-open-spotify-modal').addEventListener('click', () => {
                 spotifyModal.style.display = 'flex';
@@ -1073,7 +1114,7 @@
                 const name = prompt("İsim yaz:");
                 if (name && name.trim() !== "") {
                     bookmarks.push({ name: name.trim(), page: currentPageIndex });
-                    saveAllDataNow();
+                    saveAllDataNow(true);
                     renderBookmarkModalList();
                 }
             });
@@ -1096,7 +1137,7 @@
 
                 turningPage.classList.remove('active', 'flipped', 'next-stack', 'animating-forward', 'animating-backward');
                 turningPage.style.zIndex = 150;
-                void turningPage.offsetWidth; // reflow'u zorla: animasyonun her seferinde yeniden başlamasını garantiler
+                void turningPage.offsetWidth;
 
                 const animClass = direction === 1 ? 'animating-forward' : 'animating-backward';
                 const finalClass = direction === 1 ? 'flipped' : 'active';
@@ -1153,15 +1194,14 @@
             });
             document.getElementById('close-advanced-modal').addEventListener('click', () => advModal.style.display = 'none');
 
-            document.getElementById('btn-apply-advanced').addEventListener('click', () => {
+            document.getElementById('btn-apply-advanced').addEventListener('click', async () => {
                 applyStylesDirectly();
-                saveAllDataNow();
                 advModal.style.display = 'none';
-                showToast("Stiller Kaydedildi!");
+                await saveAllDataNow();
             });
 
             const toggleAuthorBtn = document.getElementById('btn-toggle-author');
-            toggleAuthorBtn.addEventListener('click', () => {
+            toggleAuthorBtn.addEventListener('click', async () => {
                 isAuthorMode = !isAuthorMode;
                 document.body.classList.toggle('author-mode-active', isAuthorMode);
 
@@ -1173,7 +1213,8 @@
                     toggleAuthorBtn.innerText = "✍️ Metin Düzenlemeyi Aç";
                     toggleAuthorBtn.classList.remove('active');
                     enableEditing(false);
-                    saveAllDataNow();
+                    clearTimeout(autosaveTimer);
+                    await saveAllDataNow();
                 }
             });
 
@@ -1183,7 +1224,7 @@
                 });
             }
 
-            document.getElementById('btn-add-page-panel').addEventListener('click', () => {
+            document.getElementById('btn-add-page-panel').addEventListener('click', async () => {
                 const bookEl = document.getElementById('book');
                 const pageCount = document.querySelectorAll('.page').length;
 
@@ -1200,19 +1241,18 @@
                 currentPageIndex = pageCount;
                 updatePages();
                 applyStylesDirectly();
-                saveAllDataNow();
                 showToast("Yeni Sayfa Eklendi!");
+                await saveAllDataNow(true);
             });
 
             document.getElementById('cover-upload').addEventListener('change', function (e) {
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function (event) {
+                    reader.onload = async function (event) {
                         const imgEl = document.getElementById('main-cover-img');
                         if (imgEl) imgEl.src = event.target.result;
-                        saveAllDataNow();
-                        showToast("Kapak Güncellendi!");
+                        await saveAllDataNow();
                     };
                     reader.readAsDataURL(file);
                 }
@@ -1222,24 +1262,28 @@
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function (event) {
+                    reader.onload = async function (event) {
                         document.body.style.backgroundImage = `url('${event.target.result}')`;
-                        saveAllDataNow();
-                        showToast("Arka Plan Güncellendi!");
+                        await saveAllDataNow();
                     };
                     reader.readAsDataURL(file);
                 }
             });
 
-            document.getElementById('btn-save-all').addEventListener('click', () => {
-                saveAllDataNow();
+            // Değişiklikleri Kaydet: artık kayıt bitmeden panel kapanmıyor ve
+            // "başarılı" mesajı, kayıt gerçekten tamamlandıktan sonra gösteriliyor.
+            document.getElementById('btn-save-all').addEventListener('click', async (e) => {
+                const btn = e.currentTarget;
+                btn.disabled = true;
+                await saveAllDataNow();
+                btn.disabled = false;
                 panelModal.style.display = 'none';
-                showToast("Tüm Değişiklikler Kaydedildi!");
             });
 
-            function showToast(msg) {
+            function showToast(msg, isError) {
                 const toast = document.getElementById('toast');
                 toast.innerText = msg;
+                toast.classList.toggle('toast-error', !!isError);
                 toast.style.display = 'block';
                 setTimeout(() => { toast.style.display = 'none'; }, 2200);
             }
