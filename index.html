@@ -400,6 +400,9 @@
         .btn-save-final { background: rgba(5, 150, 105, 0.95) !important; margin-top: 6px; }
         .btn-save-final:disabled { opacity: 0.6; cursor: not-allowed; }
 
+        .btn-delete-page { background: rgba(220, 38, 38, 0.85) !important; transition: background 0.2s ease; }
+        .btn-delete-page:hover { background: rgba(185, 28, 28, 0.95) !important; }
+
         .btn-add-bm-trigger { background: #2563eb; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
         .bookmark-tab-list { list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; }
         .bookmark-tab-item { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; }
@@ -670,6 +673,7 @@
             <div class="panel-group">
                 <button id="btn-toggle-author" class="btn-action btn-author-toggle">✍️ Metin Düzenlemeyi Aç</button>
                 <button id="btn-add-page-panel" class="btn-action"><i class="fa-solid fa-plus"></i> + Yeni Sayfa Ekle</button>
+                <button id="btn-delete-page-panel" class="btn-action btn-delete-page"><i class="fa-solid fa-trash-can"></i> Bu Sayfayı Sil</button>
             </div>
 
             <button id="btn-open-advanced-panel" class="btn-action btn-advanced-panel">
@@ -849,8 +853,9 @@
         const AUTHOR_PASSWORD = "camaro";
 
         // Kayıt fonksiyonu: artık tamamlanmadan başarı bildirmiyor,
-        // hata olursa sessizce yutmuyor. Otomatik/arka plan kaydı YOK,
-        // sadece sen kaydet dediğinde ya da düzenlemeyi kapattığında çalışır.
+        // hata olursa sessizce yutmuyor. Manuel "Kaydet" butonuna ek olarak,
+        // sayfa içeriğine her yazıldığında otomatik/anlık kayıt da tetiklenir
+        // (bkz. setupAutosave / flushAutosave).
         async function saveAllDataNow(silent) {
             if (!silent) showToast("Kaydediliyor...");
             try {
@@ -1545,6 +1550,55 @@
                 });
             }
 
+            // ==========================================================
+            // ANLIK (OTOMATİK) KAYIT
+            // Sayfa metnine her yazıldığında, yazma durduktan kısa bir süre
+            // sonra otomatik olarak kaydeder — sayfayı yenileyince yazılar
+            // kaybolmasın diye. #book üzerinde delegasyon kullanıldığı için
+            // sonradan eklenen yeni sayfalarda da otomatik çalışır.
+            let autosaveTimer = null;
+            let autosavePending = false;
+
+            function flushAutosave() {
+                if (!autosavePending) return;
+                clearTimeout(autosaveTimer);
+                autosaveTimer = null;
+                autosavePending = false;
+                saveAllDataNow(true);
+            }
+
+            function setupAutosave() {
+                const bookEl = document.getElementById('book');
+
+                bookEl.addEventListener('input', (e) => {
+                    if (!e.target.classList || !e.target.classList.contains('page-content')) return;
+                    autosavePending = true;
+                    clearTimeout(autosaveTimer);
+                    autosaveTimer = setTimeout(() => {
+                        autosaveTimer = null;
+                        autosavePending = false;
+                        saveAllDataNow(true);
+                    }, 1200);
+                });
+
+                // Kullanıcı yazdığı sayfadan çıkar çıkmaz (tıklayıp başka yere
+                // geçerse) bekleyen kaydı hemen tamamla, 1.2sn beklemeden.
+                bookEl.addEventListener('focusout', (e) => {
+                    if (!e.target.classList || !e.target.classList.contains('page-content')) return;
+                    flushAutosave();
+                });
+
+                // Sekme gizlenirken / kapatılırken bekleyen değişiklik varsa
+                // son bir kez kaydetmeyi dene.
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) flushAutosave();
+                });
+                window.addEventListener('beforeunload', () => {
+                    flushAutosave();
+                });
+            }
+            setupAutosave();
+
             document.getElementById('btn-add-page-panel').addEventListener('click', async () => {
                 const bookEl = document.getElementById('book');
                 const pageCount = document.querySelectorAll('.page').length;
@@ -1552,7 +1606,7 @@
                 const newPage = document.createElement('div');
                 newPage.className = 'page';
                 newPage.innerHTML = `
-                    <div class="page-content" contenteditable="${isAuthorMode ? 'true' : 'false'}">
+                    <div class="page-content" contenteditable="${isAuthorMode ? 'true' : 'false'}" style="font-size: 15px;">
                         <p>Yeni sayfa içeriğinizi yazın...</p>
                     </div>
                     <div class="page-number">— ${pageCount} —</div>
@@ -1563,6 +1617,37 @@
                 updatePages();
                 applyStylesDirectly();
                 showToast("Yeni Sayfa Eklendi!");
+                await saveAllDataNow(true);
+            });
+
+            document.getElementById('btn-delete-page-panel').addEventListener('click', async () => {
+                const allPages = document.querySelectorAll('.page');
+
+                if (currentPageIndex === 0) {
+                    showToast("❌ Kapak sayfası silinemez.", true);
+                    return;
+                }
+                if (allPages.length <= 2) {
+                    showToast("❌ Son kalan sayfa silinemez.", true);
+                    return;
+                }
+
+                const confirmDelete = confirm("Bu sayfayı kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.");
+                if (!confirmDelete) return;
+
+                allPages[currentPageIndex].remove();
+
+                // Kalan sayfaların numaralarını (kapak hariç) yeniden sırala
+                const remaining = document.querySelectorAll('.page');
+                remaining.forEach((p, idx) => {
+                    if (idx === 0) return; // kapak sayfası
+                    const numEl = p.querySelector('.page-number');
+                    if (numEl) numEl.innerText = `— ${idx} —`;
+                });
+
+                currentPageIndex = Math.min(currentPageIndex, remaining.length - 1);
+                updatePages();
+                showToast("🗑️ Sayfa silindi!");
                 await saveAllDataNow(true);
             });
 
